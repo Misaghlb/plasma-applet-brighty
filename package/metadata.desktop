@@ -1,7 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Name=Brighty
-Comment=Controll HDMI Monitor Brightness
+Comment=Control HDMI Monitor Brightness
 Icon=im-jabber
 Type=Service
 
@@ -11,7 +11,7 @@ X-KDE-PluginInfo-Email=misaghlb@live.com
 X-KDE-PluginInfo-License=GPL3
 X-KDE-PluginInfo-Name=org.kde.brighty
 X-KDE-PluginInfo-Version=0.1
-X-KDE-PluginInfo-Website=https://github.com/Misaghlb/brighty
+X-KDE-PluginInfo-Website=https://github.com/Misaghlb/plasma-applet-brighty
 X-KDE-ServiceTypes=Plasma/Applet
 X-KDE-PluginInfo-Category=Graphics
 

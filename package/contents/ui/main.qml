@@ -52,7 +52,7 @@ Item {
 
 
     Plasmoid.toolTipMainText: i18n('HDMI Brightness Control')
-    Plasmoid.toolTipSubText: 'Controll HDMI Monitor Brightness'
+    Plasmoid.toolTipSubText: 'Control HDMI Monitor Brightness'
     Plasmoid.toolTipTextFormat: Text.RichText
     Plasmoid.icon: 'im-jabber'
 

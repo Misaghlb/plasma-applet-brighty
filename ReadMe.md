@@ -1,3 +1,3 @@
-# Brightness Cotroller for HDMI Connected Monitor
+# Brightness Controller for HDMI Connected Monitor
 
-A simple plasma applet that'll controll the hdmi connected Monitor brightness.
+A simple plasma applet that'll control the hdmi connected Monitor brightness.
