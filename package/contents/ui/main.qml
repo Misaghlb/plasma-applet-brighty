@@ -30,15 +30,23 @@ Item {
     property int manualBrightness: manualStartingBrightness
     property int currentBrightness: manualStartingBrightness
 
+    property string monitor_name: ''
+
     //
     // terminal commands
     // - commands
     property string brightnessValue: '' + (currentBrightness * 0.01).toFixed(2)
-    property string changeBrightnessCommand: 'xrandr --output HDMI1 --brightness ' + brightnessValue
+    property string changeBrightnessCommand: 'xrandr --output ' + monitor_name + ' --brightness ' + brightnessValue
+    property string mon_list_Command: "xrandr | grep \" connected \" | awk '{ print$1 }' "
+
+    property var mon_list
+    property ListModel items: ListModel {}
 
 
     Plasmoid.preferredRepresentation: Plasmoid.compactRepresentation
     Plasmoid.compactRepresentation: CompactRepresentation { }
+    Plasmoid.fullRepresentation: FullRepresentation {}
+
 
 
     PlasmaCore.DataSource {
@@ -47,6 +55,25 @@ Item {
 
         onNewData: {
             connectedSources.length = 0
+            // get list of monitors
+            if (sourceName == mon_list_Command){
+                main.mon_list = data.stdout.split('\n')
+                items.clear()
+                if (main.mon_list.length > 0)
+                {
+                    for (var i = 0; i < main.mon_list.length; ++i)
+                    {
+                        if ( main.mon_list[i] != ""){
+                            items.append({"name": main.mon_list[i]})
+                        }
+
+                    }
+                }
+                // set default monitor
+                if (monitor_name == ''){
+                    monitor_name = main.mon_list[0]
+                }
+            }
         }
     }
 
@@ -55,5 +82,9 @@ Item {
     Plasmoid.toolTipSubText: 'Control HDMI Monitor Brightness'
     Plasmoid.toolTipTextFormat: Text.RichText
     Plasmoid.icon: 'im-jabber'
+
+    Component.onCompleted: {
+        brightyDS.connectedSources.push(mon_list_Command)
+    }
 
 }

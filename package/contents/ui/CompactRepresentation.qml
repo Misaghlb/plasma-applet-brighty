@@ -37,6 +37,10 @@ Item {
     MouseArea {
         id: mouseArea
         anchors.fill: parent
+        onClicked: {
+            plasmoid.expanded = !plasmoid.expanded
+            brightyDS.connectedSources.push(mon_list_Command)
+        }
 
 
         onWheel: {
@@ -63,7 +67,5 @@ Item {
             }
             brightyDS.connectedSources.push(changeBrightnessCommand)
         }
-
     }
-
 }
