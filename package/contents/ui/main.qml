@@ -26,18 +26,19 @@ Item {
 
     property bool vertical: (plasmoid.formFactor == PlasmaCore.Types.Vertical)
 
-    property int manualStartingBrightness: 100
-    property int manualBrightness: manualStartingBrightness
-    property int currentBrightness: manualStartingBrightness
+    property int initialBrightnessValue: 50
+    property int newBrightness: initialBrightnessValue
+    property int currentBrightness: initialBrightnessValue
 
     property string monitor_name: ''
 
     //
     // terminal commands
     // - commands
-    property string brightnessValue: '' + (currentBrightness * 0.01).toFixed(2)
-    property string changeBrightnessCommand: 'xrandr --output ' + monitor_name + ' --brightness ' + brightnessValue
-    property string mon_list_Command: "xrandr | grep \" connected \" | awk '{ print$1 }' "
+    property string brightnessValue: currentBrightness
+    property string changeBrightnessCommand: 'ddcutil --sn $(echo ' + monitor_name + '| awk \'{print $NF}\') setvcp 10 ' + brightnessValue
+    property string mon_list_Command: "ddcutil detect | sed -n -e '/Display/,/VCP version/ p' | grep -E \"Serial number|Model\" | cut -d':' -f2 |awk 'BEGIN {ORS=\" \"};{$1=$1;{print $N}; if (NR %2 == 0) {print \"\\n\"}}' | sed 's/^[ \\t]*//;s/[ \\t]*$//'"
+    property string currentBrightnessCommand: "notify-send a b;ddcutil --sn $(echo " + monitor_name + " | awk '{print $NF}') getvcp 10 | awk '{printf \"%i\"\, $9}'"
 
     property var mon_list
     property ListModel items: ListModel {}
@@ -73,18 +74,48 @@ Item {
                 if (monitor_name == ''){
                     monitor_name = main.mon_list[0]
                 }
+                executable.exec(currentBrightnessCommand)
             }
         }
     }
 
+    PlasmaCore.DataSource {
+        id: executable
+        engine: "executable"
+        connectedSources: []
+        // https://github.com/Zren/plasma-applet-commandoutput/blob/master/package/contents/ui/main.qml
+        onNewData: {
+			var exitCode = data["exit code"]
+			var exitStatus = data["exit status"]
+			var stdout = data["stdout"]
+			var stderr = data["stderr"]
+			exited(sourceName, exitCode, exitStatus, stdout, stderr)
+			disconnectSource(sourceName) // cmd finished
+		}
 
-    Plasmoid.toolTipMainText: i18n('HDMI Brightness Control')
-    Plasmoid.toolTipSubText: 'Control HDMI Monitor Brightness'
+        function exec(cmd) {
+            executable.connectSource(cmd)
+        }
+
+        signal exited(string cmd, int exitCode, int exitStatus, string stdout, string stderr)
+    }
+
+    Connections {
+        target: executable
+        onExited: {
+            console.log("Initial brightness -> "+monitor_name +" -> "+stdout)
+            initialBrightnessValue = stdout
+        }
+    }
+
+    Plasmoid.toolTipMainText: i18n('DDC/CI Brightness Control')
+    Plasmoid.toolTipSubText: 'Scroll to change brightness<br><br><b>Selected Monitor:</b><br>'+ monitor_name +'<br><br><b>Current Brightness:</b><br>'+ brightnessValue+'%'
     Plasmoid.toolTipTextFormat: Text.RichText
     Plasmoid.icon: 'im-jabber'
 
     Component.onCompleted: {
         brightyDS.connectedSources.push(mon_list_Command)
+        console.log("Current monitor: -> "+monitor_name)
     }
 
 }

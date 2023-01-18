@@ -14,13 +14,13 @@ Item {
 
     Layout.minimumWidth: itemWidth
     Layout.minimumHeight: itemHeight
-    Plasmoid.switchWidth: units.gridUnit * 20
-    Plasmoid.switchHeight: units.gridUnit * 30
+    //Plasmoid.switchWidth: units.gridUnit * 20
+    //Plasmoid.switchHeight: units.gridUnit * 30
 
 
     // x100 for better counting
-    property int brightnessIncrement: plasmoid.configuration.manualBrightnessStep * 100
-    property int brightnessMin: 10
+    property int brightnessIncrement: plasmoid.configuration.newBrightnessStep * 100
+    property int brightnessMin: 0
     property int brightnessMax: 100
 
     property bool textColorLight: ((theme.textColor.r + theme.textColor.g + theme.textColor.b) / 3) > 0.5
@@ -50,21 +50,22 @@ Item {
             }
             if (wheel.angleDelta.y > 0) {
                 // wheel up
-                    manualBrightness += brightnessIncrement
-                    if (manualBrightness > brightnessMax) {
-                        manualBrightness = brightnessMax
+                    newBrightness += brightnessIncrement
+                    if (newBrightness > brightnessMax) {
+                        newBrightness = brightnessMax
                     }
-                    currentBrightness = manualBrightness
+                    currentBrightness = newBrightness
                 
             } else {
                 // wheel down
-                    manualBrightness -= brightnessIncrement
-                    if (manualBrightness < brightnessMin) {
-                        manualBrightness = brightnessMin
+                    newBrightness -= brightnessIncrement
+                    if (newBrightness < brightnessMin) {
+                        newBrightness = brightnessMin
                     }
-                    currentBrightness = manualBrightness
+                    currentBrightness = newBrightness
                  
             }
+            console.log(changeBrightnessCommand)
             brightyDS.connectedSources.push(changeBrightnessCommand)
         }
     }
